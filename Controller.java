@@ -10,6 +10,12 @@ public class Controller {
         System.out.flush();
     }
 
+    // Make the player press enter to continue
+    public static void pauseScreen() {
+        System.out.print("Press ENTER to continue");
+        keyboard.nextLine();
+    }
+
     // Print the help screen
     public static void help() {
         System.out.println("Controls:");
@@ -21,15 +27,10 @@ public class Controller {
         System.out.println("\t? to open help.");
         System.out.println("\tq to quit.");
         System.out.println("-------------------------");
-
-        System.out.println("Press ENTER to continue");
-        keyboard.nextLine();
     }
-
 
     public static void main(String[] args) {
         World world = new World(20, 10, new int[] {1, 1});
-
 
         // Main game loop!
         while (true) {
@@ -52,11 +53,14 @@ public class Controller {
             // Print the help screen
             if (direction == '?') {
                 help();
+                pauseScreen();
+            } else if (direction == 'i') {
+                world.showInventory();
+                pauseScreen();
             } else if (direction == 'q') {
                 System.exit(0);
             }
         }
-
 
     }
 }

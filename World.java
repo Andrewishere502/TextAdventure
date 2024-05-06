@@ -14,7 +14,7 @@ public class World {
 
     // Store player and other characters
     private Player player;
-    private LinkedList<Character> characters = new LinkedList<Character>();
+    private LinkedList<Character> npcs = new LinkedList<Character>();
 
     // Width and height of the grid
     private final int width;
@@ -210,6 +210,21 @@ public class World {
                 System.out.printf("%c ", charTable[grid[i][j]]);
             }
             System.out.println();  // Go to the next line after each row
+        }
+    }
+
+    // Public method to print the player's inventory
+    public void showInventory() {
+        for (int i = 0; i < player.getInventoryMaxSize(); i++) {
+            // Skip empty item slots
+            if (player.getItem(i) == null) {
+                System.out.println("~ empty slot ~");
+                continue;
+            }
+
+            System.out.printf("%d) %s%n", i, player.getItem(i).getName());
+            System.out.printf("Durability: %d%n", player.getItem(i).getDurability());
+            System.out.println("-------------------------");
         }
     }
 
