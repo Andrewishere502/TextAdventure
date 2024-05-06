@@ -24,7 +24,7 @@ public class World {
     // Table to convert integers to their character representation
     private char[] charTable = {
         '.', // 0, empty tile
-        '.', // 1
+        '#', // 1, wall tile
         '~', // 2, water tile
         '.', // 3
         '.', // 4
@@ -81,13 +81,29 @@ public class World {
         }
     }
 
+    // Return true if a tile at some location is passable
+    private boolean isPassable(int x, int y) {
+        int tile;
+        try {
+            tile = grid[y][x];
+        } catch (IndexOutOfBoundsException e) {
+            // The specified tile is not valid in the grid,
+            // so the player can't move there.
+            return false;
+        }
+        // impassable tiles:
+        //      - 1: wall tile
+        //      - 2: water tile
+        return tile != 1 && tile != 2;
+    }
+
     // Create a symbol table that stores the movement vector associated
     // with each movement direction.
     public ST<Character,int[]> getValidMoves(int x, int y) {
         ST<Character,int[]> validMoves = new ST<Character,int[]>();
 
         // Not in left-most column, so player can move west
-        if (x > 0) {
+        if (isPassable(x - 1, y)) {
             validMoves.put(
                 'w',        // w for west
                 new int[] {-1, 0}     // Move -1 in x axis and 0 in y axis
@@ -95,7 +111,7 @@ public class World {
         }
 
         // Not in right-most column, so player can move east
-        if (x < width - 1) {
+        if (isPassable(x + 1, y)) {
             validMoves.put(
                 'e',        // e for west
                 new int[] {1, 0}     // Move 1 in x axis and 0 in y axis
@@ -103,7 +119,7 @@ public class World {
         }
 
         // Not in top row, so player can move north
-        if (y > 0) {
+        if (isPassable(x, y - 1)) {
             validMoves.put(
                 'n',        // n for west
                 new int[] {0, -1}     // Move 0 in x axis and -1 in y axis
@@ -111,7 +127,7 @@ public class World {
         }
 
         // Not in bottom row, so player can move south
-        if (y < height - 1) {
+        if (isPassable(x, y + 1)) {
             validMoves.put(
                 's',        // w for west
                 new int[] {0, 1}     // Move 0 in x axis and 1 in y axis
