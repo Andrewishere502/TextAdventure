@@ -26,12 +26,12 @@ public class World {
         '.', // 0, empty tile
         '#', // 1, wall tile
         '~', // 2, water tile
-        '.', // 3
+        '*', // 3, gate tile
         '.', // 4
         '.', // 5
         '.', // 6
         '.', // 7
-        '.', // 8
+        '&', // 8, goblin tile
         '@' // 9, player tile
     };
     // Store a queue of tiles that were moved onto by something...
@@ -47,10 +47,8 @@ public class World {
 
         spawn(playerLocation[0], playerLocation[1], 9); // 9 is tile ID of player character
         player = new Player(
-            "Adventurer",
             playerLocation[0],  // Starting x coordinate
-            playerLocation[1],  // Starting y coordinate
-            10                  // Starting health
+            playerLocation[1]   // Starting y coordinate
             );
     }
 
