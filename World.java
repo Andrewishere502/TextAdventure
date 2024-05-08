@@ -57,23 +57,15 @@ public class World {
         // Initiate the grid with all 0s, the empty tile square
         grid = new int[height][width];
 
-        // Add a small patch of water somewhere (tile id 3)
-        addSquarePatch(width, height, 3, 6, 3, 6, 2);
+        // Add a small patch of water somewhere (tile id 2)
+        addSquarePatch(4, 4, 3, 6, 2);
     }
 
-    // Add a small square patch of some tile into a random spot on the grid
-    private void addSquarePatch(int width, int height, int minWidth, int maxWidth, int minHeight, int maxHeight, int tile) {
-        // Get random size of patch
-        int patchWidth = minWidth + random.nextInt(maxWidth - minWidth);
-        int patchHeight = minHeight + random.nextInt(maxHeight - minHeight);
-
-        // Get random starting x and y coordinates
-        int startX = random.nextInt(width - patchWidth);
-        int startY = random.nextInt(height - patchHeight);
-
+    // Add a small square patch of some tile into a spot on the grid
+    private void addSquarePatch(int xPos, int yPos, int width, int height, int tile) {
         // Place the tile in the patch area
-        for (int i = startY; i < startY + patchHeight; i++) {
-            for (int j = startX; j < startX + patchWidth; j++) {
+        for (int i = yPos; i < yPos + height; i++) {
+            for (int j = xPos; j < xPos + width; j++) {
                 grid[i][j] = tile;
             }
         }
