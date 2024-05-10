@@ -14,7 +14,7 @@ public class World {
 
     // Store player and other characters
     private Player player;
-    private LinkedList<Character> npcs = new LinkedList<Character>();
+    private LinkedList<MindGoblin> goblins = new LinkedList<MindGoblin>();
 
     // Width and height of the grid
     private final int width;
@@ -42,14 +42,23 @@ public class World {
     public World(int width, int height, int[] playerLocation) {
         this.width = width;
         this.height = height;
+
         // Generate the grid
         generateGrid();
 
-        spawn(playerLocation[0], playerLocation[1], 9); // 9 is tile ID of player character
+        // Spawn the player
+        spawn(playerLocation[0], playerLocation[1], 9);
         player = new Player(
             playerLocation[0],  // Starting x coordinate
             playerLocation[1]   // Starting y coordinate
             );
+
+        // Spawn a mind goblin
+        int[] mindGoblinLocation = new int[] {15, 0};
+        spawn(mindGoblinLocation[0], mindGoblinLocation[1], 8);
+        goblins.add(new MindGoblin(mindGoblinLocation[0],
+                                   mindGoblinLocation[1])
+                );
     }
 
     // Populate the grid with more than just empty squares
@@ -127,6 +136,19 @@ public class World {
         return validMoves;
     }
 
+    // Return a bit map representing blocked tiles as 1 and passable
+    // tiles as 0
+    public int[][] getPassabilityMap() {
+        int[][] passabilityMap = new int[height][width];
+        for (int i = 0; i < height; i++) { // y coordinates
+            for (int j = 0; j < width; j++) { // x coordinates
+                passabilityMap[i][j] = isPassable(j, i) ? 0 : 1; // if passable 0 else 1
+            }
+        }
+
+        return passabilityMap;
+    }
+
     // Place something on the grid, placing the int that was
     // at that position on the tile queue.
     private void place(int x, int y, int tile) {
@@ -153,9 +175,9 @@ public class World {
         place(x, y, tile);
     }
 
-    // Move something one tile in any direction (NSEW), and return
+    // Move the player one tile in any direction (NSEW), and return
     // it's new location as coordinates (x, y)
-    private int[] move(int x, int y, char direction) {
+    private int[] movePlayer(int x, int y, char direction) {
         // Get the valid moves for a given position
         ST<Character,int[]> validMoves = getValidMoves(x, y);
 
@@ -170,26 +192,45 @@ public class World {
         int newX = x + vector[0];
         int newY = y + vector[1];
 
-        // Remove and store the tile to be moved
-        int moveTile = replace(x, y);
-        // Place the tile at it's new location
-        place(newX, newY, moveTile);
-
         // Return the coordinates as a 2-element array
-        return new int[] {newX, newY};
+        return move(x, y, newX, newY);
     }
 
     // Move the player specifically
     public void movePlayer(char direction) {
         // Move the player
-        int[] newPos = move(player.getXPos(), player.getYPos(), direction);
+        int[] newPos = movePlayer(player.getXPos(), player.getYPos(), direction);
         // Set the player's new location
         player.setXPos(newPos[0]);
         player.setYPos(newPos[1]);
     }
 
+    // Move the some entity
+    private int[] move(int x, int y, int newX, int newY) {
+        // Remove and store the tile to be moved
+        int moveTile = replace(x, y);
+        // Place the tile at it's new location
+        place(newX, newY, moveTile);
+        // Return the coordinates as a 2-element array
+        return new int[] {newX, newY};
+    }
+
     // Increment the world age by 1
     public void nextTurn() {
+        int[] playerPosition = new int[] {player.getXPos(), player.getYPos()};
+        // Move all of the goblins
+        for (MindGoblin goblin : goblins) {
+            // Update the golbin's mind
+            goblin.updateMind(playerPosition, getPassabilityMap());
+
+            // Move the goblin
+            int[] goblinMove = goblin.nextMove();
+            move(goblin.getXPos(), goblin.getYPos(), goblinMove[0], goblinMove[1]);
+            goblin.setXPos(goblinMove[0]);
+            goblin.setYPos(goblinMove[1]);
+        }
+
+        // Increment turn counter
         turn++;
     }
 

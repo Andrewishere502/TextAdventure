@@ -30,7 +30,8 @@ public class Controller {
     }
 
     public static void main(String[] args) {
-        World world = new World(20, 10, new int[] {1, 1});
+        int[] playerLocation = new int[] {1, 1};
+        World world = new World(20, 10, playerLocation);
 
         // Main game loop!
         while (true) {
@@ -60,6 +61,9 @@ public class Controller {
             } else if (direction == 'q') {
                 System.exit(0);
             }
+
+            // Increment to next turn
+            world.nextTurn();
         }
 
     }
